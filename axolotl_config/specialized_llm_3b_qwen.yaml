@@ -1,0 +1,68 @@
+base_model: /raid/HUB_LLM/Qwen2.5-3B
+
+trust_remote_code: true
+
+load_in_8bit: false
+load_in_4bit: false
+strict: false
+
+chat_template: qwen_25
+datasets:
+  - path: json
+    data_files:
+      - /workspace/home/namb/hoangpv4/kg_fact_checking/data/train_specialized_llm/data_ready_to_train_10000.jsonl
+    type: chat_template
+    field_messages: messages
+    message_field_role: role
+    message_field_content: content
+    
+val_set_size: 0.0
+output_dir: /raid/hoangpv4/models/specialized_llm_3b_qwen_base_10000
+
+sequence_len: 256
+sample_packing: false
+pad_to_sequence_len: true
+
+wandb_project:
+wandb_entity:
+wandb_watch:
+wandb_name:
+wandb_log_model:
+
+gradient_accumulation_steps: 1
+micro_batch_size: 32
+num_epochs: 1
+optimizer: adamw_torch
+lr_scheduler: constant
+learning_rate: 2e-5
+
+train_on_inputs: false
+group_by_length: false
+bf16: auto
+fp16:
+tf32: true
+
+gradient_checkpointing: true
+gradient_checkpointing_kwargs:
+  use_reentrant: false
+early_stopping_patience:
+resume_from_checkpoint:
+logging_steps: 5
+xformers_attention:
+flash_attention: true
+
+warmup_steps: 100
+evals_per_epoch: 2
+eval_table_size:
+saves_per_epoch: 1
+debug:
+deepspeed: /workspace/home/namb/hoangpv4/kg_fact_checking/axolotl_config/zero3.json
+weight_decay: 0.0
+fsdp:
+fsdp_config:
+special_tokens:
+  eos_token: <|im_end|>
+tokens:
+  - "<entity>"
+  - "</entity>"
+  - "~"

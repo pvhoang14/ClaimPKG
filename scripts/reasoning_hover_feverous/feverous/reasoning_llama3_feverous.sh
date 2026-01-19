@@ -1,0 +1,2 @@
+export PYTHONPATH="$(pwd)":$PYTHONPATH
+python workflow/pipeline/llm_reasoning_hover_feverous.py     --input-file-path /home/namb/hoangpv4/kg_fact_checking/data/output/retrieved_subgraphs_hover_feverous/feverous/specialized_llm_3b_base_5000_checkpoint-157_num_beams_5_retrieved_embedding_-4079494004960104346.json     --output-folder /home/namb/hoangpv4/kg_fact_checking/data/output/reasoning_results_hover_feverous/llama3/feverous     --num-workers 30     --vllm-server-host http://localhost:8264     --model-name Llama-3.3-70B-Instruct

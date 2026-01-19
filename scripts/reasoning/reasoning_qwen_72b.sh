@@ -1,0 +1,2 @@
+export PYTHONPATH="$(pwd)":$PYTHONPATH
+python workflow/pipeline/llm_reasoning.py     --input-file-path /home/namb/hoangpv4/kg_fact_checking/data/output/retrieved_subgraphs/specialized_llm_3b_base_5000_checkpoint-157/specialized_llm_3b_base_5000_checkpoint-157_num_beams_5_retrieved_1631798178181607376.json     --output-folder /home/namb/hoangpv4/kg_fact_checking/data/output/reasoning_results_ablation/reasoning_results_qwen_72b     --num-workers 40     --vllm-server-host http://localhost:8264     --model-name Qwen2.5-72B-Instruct

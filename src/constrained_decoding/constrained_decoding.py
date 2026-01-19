@@ -1,0 +1,160 @@
+import pickle
+import sys
+from typing import Dict, List
+
+import torch
+from tqdm.auto import tqdm
+from transformers import PreTrainedTokenizer
+
+
+class Trie:
+    def __init__(self, nested_token_ids: List[List[int]], no_subsets: bool = False):
+        self.max_height = (
+            max(len(seq) for seq in nested_token_ids) if nested_token_ids else 0
+        )
+        self.trie = {
+            "children": {},
+            "is_end": False,
+        }
+
+        for token_ids in tqdm(nested_token_ids):
+            level = self.trie["children"]
+            for i, token_id in enumerate(token_ids):
+                if token_id not in level:
+                    level[token_id] = {"children": {}, "is_end": False}
+                if i == len(token_ids) - 1:  # Mark end of sequence
+                    level[token_id]["is_end"] = True
+                level = level[token_id]["children"]
+
+        if no_subsets:
+            self._validate_no_subsets(nested_token_ids)
+
+    def _validate_no_subsets(self, nested_token_ids: List[List[int]]):
+        for token_ids in nested_token_ids:
+            node = self.trie["children"]
+            for token in token_ids:
+                if token not in node:
+                    break
+                if node[token]["is_end"] and token != token_ids[-1]:
+                    # Found a shorter sequence that is a prefix of the current sequence
+                    raise ValueError(
+                        f"Found a sequence that is a subset of another sequence: {token_ids}"
+                    )
+                node = node[token]["children"]
+
+    def next_tokens(self, current_seq: List[int]) -> List[int]:
+        node = self.trie["children"]
+        # Traverse to current position
+        for token in current_seq:
+            if token not in node:
+                raise ValueError(f"Invalid sequence: {current_seq}")
+            node = node[token]["children"]
+        # Return possible next tokens
+        return list(node.keys())
+
+    def reached_leaf(self, current_seq: List[int]) -> bool:
+        node = self.trie["children"]
+        for i, token in enumerate(current_seq):
+            if token not in node:
+                raise ValueError(f"Sequence {current_seq} not in trie")
+            if i == len(current_seq) - 1 and node[token]["is_end"]:
+                return True
+            node = node[token]["children"]
+        return False
+
+    def is_subset(self, candidate_seq: List[int]) -> bool:
+        if not candidate_seq:
+            return True
+
+        node = self.trie["children"]
+        for token in candidate_seq:
+            if token not in node:
+                return False
+            node = node[token]["children"]
+        # The sequence is a subset if we can reach this point - we don't need
+        # to check node["is_end"] since we're checking for prefixes
+        return True
+
+    def count_unique_paths(self):
+        def _count_unique_paths(node: Dict) -> int:
+            count = 0
+            if node["is_end"]:
+                count += 1
+            for token, child in node["children"].items():
+                count += _count_unique_paths(child)
+            return count
+
+        return _count_unique_paths(self.trie)
+
+    @staticmethod
+    def load(filepath: str) -> "Trie":
+        with open(filepath, "rb") as f:
+            trie_data = pickle.load(f)
+            trie = Trie([])
+            trie.max_height = trie_data["max_height"]
+            trie.trie = trie_data["trie"]
+            return trie
+
+    def store(self, filepath: str):
+        old_limit = sys.getrecursionlimit()
+        sys.setrecursionlimit(100000)
+
+        try:
+            trie_data = {"trie": self.trie, "max_height": self.max_height}
+            with open(filepath, "wb") as f:
+                pickle.dump(trie_data, f, protocol=pickle.HIGHEST_PROTOCOL)
+        finally:
+            sys.setrecursionlimit(old_limit)
+
+
+def constrained_decoding(
+    tokenizer: PreTrainedTokenizer,
+    trie: Trie,
+    start_entity_token: str,
+    end_entity_token: str,
+):
+    if not start_entity_token or not end_entity_token:
+        raise ValueError("start_entity_token and end_entity_token must not be empty")
+
+    # Get token IDs for the entity markers
+    start_id = tokenizer.convert_tokens_to_ids(start_entity_token)
+    end_id = tokenizer.convert_tokens_to_ids(end_entity_token)
+
+    if start_id == tokenizer.unk_token_id or end_id == tokenizer.unk_token_id:
+        raise ValueError(
+            "Failed to convert start_entity_token or end_entity_token to valid token IDs"
+        )
+
+    all_tokens = list(range(len(tokenizer)))
+
+    def constrained_function(batch_id: int, tokens: torch.Tensor) -> List[int]:
+        token_list = tokens.tolist()
+        try:
+            last_start_idx = (
+                len(token_list) - 1 - token_list[::-1].index(start_id)
+                if start_id in token_list
+                else -1
+            )
+            last_end_idx = (
+                len(token_list) - 1 - token_list[::-1].index(end_id)
+                if end_id in token_list
+                else -1
+            )
+        except ValueError:
+            return all_tokens
+
+        entity_mode = last_start_idx > last_end_idx
+
+        if entity_mode:
+            if tokenizer.eos_token_id in token_list:
+                return all_tokens
+            try:
+                current_path = token_list[last_start_idx + 1 :]
+                next_tokens = trie.next_tokens(current_path)
+                return next_tokens if next_tokens else all_tokens
+            except (IndexError, ValueError) as e:
+                print(f"Error at batch {batch_id}: {e}")
+                return all_tokens
+        return all_tokens
+
+    return constrained_function

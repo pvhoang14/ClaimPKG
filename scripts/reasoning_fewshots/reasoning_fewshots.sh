@@ -1,0 +1,5 @@
+export PYTHONPATH="$(pwd)":$PYTHONPATH
+python workflow/pipeline/llm_reasoning.py     --input-file-path /home/namb/hoangpv4/kg_fact_checking/data/output/retrieved_subgraphs_fewshots/llama_3.3_70B_instruct_5_subgraphs_retrieved_-537214843412993449.json     --output-folder /home/namb/hoangpv4/kg_fact_checking/data/output/reasoning_results_fewshots     --num-workers 30     --vllm-server-host http://localhost:8264     --model-name Llama-3.3-70B-Instruct
+
+export PYTHONPATH="$(pwd)":$PYTHONPATH
+python workflow/pipeline/llm_reasoning.py     --input-file-path /home/namb/hoangpv4/kg_fact_checking/data/output/retrieved_subgraphs_fewshots/qwen_2.5_72B_instruct_5_subgraphs_retrieved_8906565648764467019.json     --output-folder /home/namb/hoangpv4/kg_fact_checking/data/output/reasoning_results_fewshots     --num-workers 30     --vllm-server-host http://localhost:8264     --model-name Llama-3.3-70B-Instruct

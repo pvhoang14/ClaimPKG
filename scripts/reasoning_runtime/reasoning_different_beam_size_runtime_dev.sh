@@ -1,0 +1,11 @@
+export PYTHONPATH="$(pwd)":$PYTHONPATH
+python workflow/pipeline/llm_reasoning_runtime.py     --input-file-path /home/namb/hoangpv4/kg_fact_checking/data/output/retrieved_subgraphs_dev/specialized_llm_3b_base_5000_checkpoint-157/specialized_llm_3b_base_5000_checkpoint-157_num_beams_1_retrieved_7398787331908846245.json     --output-folder /home/namb/hoangpv4/kg_fact_checking/data/output/reasoning_results_runtime     --num-workers 1     --vllm-server-host http://localhost:8264     --model-name Llama-3.3-70B-Instruct
+
+export PYTHONPATH="$(pwd)":$PYTHONPATH
+python workflow/pipeline/llm_reasoning_runtime.py     --input-file-path /home/namb/hoangpv4/kg_fact_checking/data/output/retrieved_subgraphs_dev/specialized_llm_3b_base_5000_checkpoint-157/specialized_llm_3b_base_5000_checkpoint-157_num_beams_5_retrieved_-3500189888326455151.json     --output-folder /home/namb/hoangpv4/kg_fact_checking/data/output/reasoning_results_runtime     --num-workers 1     --vllm-server-host http://localhost:8264     --model-name Llama-3.3-70B-Instruct
+
+export PYTHONPATH="$(pwd)":$PYTHONPATH
+python workflow/pipeline/llm_reasoning_runtime.py     --input-file-path /home/namb/hoangpv4/kg_fact_checking/data/output/retrieved_subgraphs_dev/specialized_llm_3b_base_5000_checkpoint-157/specialized_llm_3b_base_5000_checkpoint-157_num_beams_10_retrieved_285496373680443775.json     --output-folder /home/namb/hoangpv4/kg_fact_checking/data/output/reasoning_results_runtime     --num-workers 1     --vllm-server-host http://localhost:8264     --model-name Llama-3.3-70B-Instruct
+
+export PYTHONPATH="$(pwd)":$PYTHONPATH
+python workflow/pipeline/llm_reasoning_runtime.py     --input-file-path /home/namb/hoangpv4/kg_fact_checking/data/output/retrieved_subgraphs_dev/specialized_llm_3b_base_5000_checkpoint-157/specialized_llm_3b_base_5000_checkpoint-157_num_beams_3_retrieved_-6793163672607592216.json     --output-folder /home/namb/hoangpv4/kg_fact_checking/data/output/reasoning_results_runtime     --num-workers 1     --vllm-server-host http://localhost:8264     --model-name Llama-3.3-70B-Instruct

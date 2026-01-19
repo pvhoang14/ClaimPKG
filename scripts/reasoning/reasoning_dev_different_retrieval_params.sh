@@ -1,0 +1,8 @@
+export PYTHONPATH="$(pwd)":$PYTHONPATH
+python workflow/pipeline/llm_reasoning.py     --input-file-path /home/namb/hoangpv4/kg_fact_checking/data/output/retrieved_subgraphs_dev_different_retrieval_params/specialized_llm_3b_base_5000_checkpoint-157/specialized_llm_3b_base_5000_checkpoint-157_num_beams_5_retrieved_embedding_8223393111162398058.json     --output-folder /home/namb/hoangpv4/kg_fact_checking/data/output/reasoning_results_dev_different_retrieval_params     --num-workers 100     --vllm-server-host http://localhost:8264     --model-name Llama-3.3-70B-Instruct
+
+export PYTHONPATH="$(pwd)":$PYTHONPATH
+python workflow/pipeline/llm_reasoning.py     --input-file-path /home/namb/hoangpv4/kg_fact_checking/data/output/retrieved_subgraphs_dev_different_retrieval_params/specialized_llm_3b_base_5000_checkpoint-157/specialized_llm_3b_base_5000_checkpoint-157_num_beams_5_retrieved_embedding_-5746921077152588372.json     --output-folder /home/namb/hoangpv4/kg_fact_checking/data/output/reasoning_results_dev_different_retrieval_params     --num-workers 100     --vllm-server-host http://localhost:8264     --model-name Llama-3.3-70B-Instruct
+
+export PYTHONPATH="$(pwd)":$PYTHONPATH
+python workflow/pipeline/llm_reasoning.py     --input-file-path /home/namb/hoangpv4/kg_fact_checking/data/output/retrieved_subgraphs_dev_different_retrieval_params/specialized_llm_3b_base_5000_checkpoint-157/specialized_llm_3b_base_5000_checkpoint-157_num_beams_5_retrieved_embedding_-1072745496003554327.json     --output-folder /home/namb/hoangpv4/kg_fact_checking/data/output/reasoning_results_dev_different_retrieval_params     --num-workers 100     --vllm-server-host http://localhost:8264     --model-name Llama-3.3-70B-Instruct
